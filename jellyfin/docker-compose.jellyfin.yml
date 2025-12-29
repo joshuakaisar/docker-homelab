@@ -1,0 +1,22 @@
+services:
+    jellyfin:
+        image: linuxserver/jellyfin
+        container_name: jellyfin
+        ports:
+            - "8096:8096/tcp" # Jellyfin web interface
+            - "7359:7359/udp" # Network discovery
+            - "1900:1900/udp" # DLNA port
+        volumes:
+            - ${APPPATH}jellyfin/config:/config
+            - ${APPPATH}jellyfin/cache:/cache
+            - /mnt/nas/:/data/ # Bind mount for media files
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - APPPATH=${APPPATH}
+        restart: "unless-stopped"
+        networks:
+            - nginxproxymanager_default # Connect to NPM's network
+networks:
+    nginxproxymanager_default:
+        external: true

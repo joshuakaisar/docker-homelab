@@ -1,0 +1,21 @@
+services:
+    jellyseerr:
+        container_name: jellyseerr
+        image: fallenbagel/jellyseerr:latest
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - APPPATH=${APPPATH}
+            - LOG_LEVEL=debug
+            - TZ=${TZ}
+        ports:
+            - 5055:5055
+        volumes:
+            - ${APPPATH}jellyseerr/config:/app/config
+        restart: unless-stopped
+        networks:
+            - nginxproxymanager_default # Connect to NPM's network
+
+networks:
+    nginxproxymanager_default:
+        external: true

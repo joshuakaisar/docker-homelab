@@ -1,0 +1,43 @@
+services:
+    glance:
+        container_name: glance
+        image: glanceapp/glance
+        restart: unless-stopped
+        volumes:
+            - /home/joshua-kaisar/homelab/open80-homelab/glance/config:/app/config
+            - /home/joshua-kaisar/homelab/open80-homelab/glance/assets/:/app/assets
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /mnt/media:/mnt/media:ro
+            - /mnt/downloads:/mnt/downloads:ro
+            # Optionally, enable Docker containers widget
+            # - /var/run/docker.sock:/var/run/docker.sock:ro
+        environment:
+            - QBITTORRENT_URL=${QBITTORRENT_URL}
+            - QBITTORRENT_USER=${QBITTORRENT_USER}
+            - QBITTORRENT_PASS=${QBITTORRENT_PASS}
+            - RADARR_URL=${RADARR_URL}
+            - RADARR_API_KEY=${RADARR_API_KEY}
+            - SONARR_URL=${SONARR_URL}
+            - SONARR_API_KEY=${SONARR_API_KEY}
+            - PROWLARR_URL=${PROWLARR_URL}
+            - PROWLARR_API_KEY=${PROWLARR_API_KEY}
+            - HOMARR_URL=${HOMARR_URL}
+            - LIDARR_URL=${LIDARR_URL}
+            - READARR_URL=${READARR_URL}
+            - GLUETUN_URL=${GLUETUN_URL}
+            - GLUETUN_API_KEY=${GLUETUN_API_KEY}
+            - SPEEDTEST_URL=${SPEEDTEST_URL}
+            - SPEEDTEST_TRACKER_API_TOKEN=${SPEEDTEST_TRACKER_API_TOKEN}
+            - JELLYFIN_URL=${JELLYFIN_URL}
+            - JELLYFIN_API_KEY=${JELLYFIN_API_KEY}
+            - JELLYSEERR_URL=${JELLYSEERR_URL}
+            - BAZARR_URL=${BAZARR_URL}
+            - NGINX_PROXY_MANAGER_URL=${NGINX_PROXY_MANAGER_URL}
+            - AUDIOBOOKSHELF_URL=${AUDIOBOOKSHELF_URL}
+        networks:
+            - nginxproxymanager_default # Connect to NPM's network
+
+networks:
+    nginxproxymanager_default:
+        external: true

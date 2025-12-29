@@ -1,0 +1,18 @@
+services:
+    audiobookshelf:
+        image: ghcr.io/advplyr/audiobookshelf:latest
+        container_name: audiobookshelf
+        ports:
+            - 4343:80
+        environment:
+            - TZ=${TZ}
+            - AUDIOBOOKSHELFPATH=${AUDIOBOOKSHELFPATH}
+        volumes:
+            - /mnt/nas/:/data/books
+            - ${AUDIOBOOKSHELFPATH}/audioBookShelf/config:/config
+            - ${AUDIOBOOKSHELFPATH}/audioBookShelf/metadata:/metadata
+        networks:
+            - nginxproxymanager_default # Connect to NPM's network
+networks:
+    nginxproxymanager_default:
+        external: true
