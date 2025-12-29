@@ -1,0 +1,83 @@
+- name: Home
+  width: slim
+  hide-desktop-navigation: false
+  center-vertically: true
+  columns:
+      - size: small
+        widgets:
+            - type: calendar
+              first-day-of-week: monday
+
+            - type: weather
+              location: New York, United States
+              units: imperial # alternatively "metric"
+              hour-format: 12h # alternatively "24h"
+              # Optionally hide the location from being displayed in the widget
+              # hide-location: true
+
+            - type: markets
+              markets:
+                  - symbol: VOO
+                    name: Vanguard S&P 500 ETF
+                  - symbol: VTI
+                    name: Vanguard Total Stock Market ETF
+                  - symbol: QQQ
+                    name: Invesco QQQ Trust
+                  - symbol: BRK-B
+                    name: Berkshire Hathaway
+                  - symbol: SCHB
+                    name: Schwab U.S. Broad Market ETF
+                  - symbol: BTC-USD
+                    name: Bitcoin
+
+            - type: releases
+              cache: 1d
+              # Without authentication the Github API allows for up to 60 requests per hour. You can create a
+              # read-only token from your Github account settings and use it here to increase the limit.
+              # token: ...
+              repositories:
+                  - glanceapp/glance
+                  - go-gitea/gitea
+                  - immich-app/immich
+                  - syncthing/syncthing
+
+            # - type: twitch-channels
+            #   channels:
+            #       - theprimeagen
+            #       - j_blow
+            #       - piratesoftware
+            #       - cohhcarnage
+            #       - christitustech
+            #       - EJ_SA
+
+      - size: full
+        widgets:
+            - type: custom-api
+              title: Daily Bible Verse
+              cache: 3h
+              url: https://bible-api.com/data/web/random
+              template: |
+                  <p class="size-h2 color-highlight">{{ .JSON.String "random_verse.book" }} {{ .JSON.String "random_verse.chapter" }}:{{ .JSON.String "random_verse.verse" }}</p>
+                  <p class="size-h4 color-paragraph">{{ .JSON.String "random_verse.text" }}</p>
+
+            - type: videos
+              channels:
+                  - UCXuqSBlHAE6Xw-yeJA0Tunw # Linus Tech Tips
+                  - UCsBjURrPoezykLs9EqgamOA # Fireship
+                  - UCBJycsmduvYEL83R_U4JriQ # Marques Brownlee
+                  - UCHnyfMqiRRG1u-2MsSQLbXA # Veritasium
+
+            - type: group
+              widgets:
+                  - type: reddit
+                    subreddit: OLED_Gaming
+                    show-thumbnails: true
+                  - type: reddit
+                    subreddit: fujifilm
+                    show-thumbnails: true
+                  - type: reddit
+                    subreddit: homelab
+                    show-thumbnails: true
+                  - type: reddit
+                    subreddit: lemmino
+                    show-thumbnails: true

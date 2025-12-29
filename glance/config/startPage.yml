@@ -1,0 +1,149 @@
+- name: Startpage
+  width: slim
+  hide-desktop-navigation: false
+  center-vertically: true
+  columns:
+      - size: small
+        widgets:
+            - type: custom-api
+              title: Now Playing
+              cache: 20s
+              url: ${JELLYFIN_URL}/Sessions?ActiveWithinMinutes=5
+              headers:
+                  X-Emby-Token: ${JELLYFIN_API_KEY}
+              template: |
+                  {{ if ne .Response.StatusCode 200 }}
+                    <div class="size-small color-negative">Jellyfin error: {{ .Response.StatusCode }} {{ .Response.Status }}</div>
+                  {{ else }}
+                    {{ $sessions := .JSON.Array "" }}
+                    <div class="flex flex-column gap-2">
+                      {{ $shown := 0 }}
+                      {{ range $session := $sessions }}
+                        {{ if lt $shown 6 }}
+                          {{ $title := $session.String "NowPlayingItem.Name" }}
+                          {{ $user := $session.String "UserName" }}
+                          {{ if and (ne $title "") (ne $user "") }}
+                            <div class="size-small">
+                              <span class="color-highlight">{{ $user }}</span>
+                              <span class="color-primary">— {{ if gt (len $title) 44 }}{{ printf "%.44s…" $title }}{{ else }}{{ $title }}{{ end }}</span>
+                            </div>
+                            {{ $shown = add $shown 1 }}
+                          {{ end }}
+                        {{ end }}
+                      {{ end }}
+                      {{ if eq $shown 0 }}
+                        <div class="size-small color-primary">No one is watching</div>
+                      {{ end }}
+                    </div>
+                  {{ end }}
+
+            - type: custom-api
+              title: VPN status
+              cache: 1m
+              url: ${GLUETUN_URL}
+              headers:
+                  X-API-Key: ${GLUETUN_API_KEY}
+              template: |
+                  {{ if eq .Response.StatusCode 200 }}
+                    {{ $ip := (.JSON.String "public_ip") }}
+                    {{ $city := (.JSON.String "city") }}
+                    {{ $country := (.JSON.String "country") }}
+                    {{ if eq $ip "" }}
+                      <div>
+                        <div>
+                          <div>
+                            <div class="color-highlight size-h3">
+                              Your VPN is not connected!
+                              <span class="color-negative">●</span> 
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {{ else }}
+                      <div>
+                        <div>
+                          <div>
+                            <div class="color-highlight size-h3">
+                              Your VPN is connected!
+                              <span class="color-positive">●</span> 
+                            </div>
+                          </div>
+                          <div class="size-h5">{{ $ip }} - {{ $city }}, {{ $country }}</div>
+                        </div>
+                      </div>
+                    {{ end }}
+                  {{ else }}
+                    <div style="text-align: center; color: var(--color-negative);">
+                      Error: {{ .Response.StatusCode }} - {{ .Response.Status }}
+                    </div>
+                  {{ end }}
+
+      - size: full
+        widgets:
+            - type: search
+              autofocus: true
+              search-engine: google
+              new-tab: true
+              bangs:
+                  - title: YouTube
+                    shortcut: "!yt"
+                    url: https://www.youtube.com/results?search_query={QUERY}
+                  - title: Github
+                    shortcut: "!gh"
+                    url: https://github.com/search?q={QUERY}&type=repositories
+            - type: monitor
+              cache: 1m
+              title: Services
+              # Do not include trailing slash in *_URL env vars.
+              sites:
+                  - title: qBittorrent
+                    url: ${QBITTORRENT_URL}
+                    icon: /assets/icons/qBittorrent.png
+                  - title: NGINX Proxy Manager
+                    url: ${NGINX_PROXY_MANAGER_URL}
+                    check-url: ${NGINX_PROXY_MANAGER_URL}
+                    icon: di:nginx
+                  - title: Jellyfin
+                    url: ${JELLYFIN_URL}
+                    icon: /assets/icons/jellyfin.svg
+                  - title: Jellyseerr
+                    url: ${JELLYSEERR_URL}
+                    check-url: ${JELLYSEERR_URL}/ping
+                    icon: /assets/icons/jellyseerr.png
+                  - title: AudioBookShelf
+                    url: ${AUDIOBOOKSHELF_URL}
+                    check-url: ${AUDIOBOOKSHELF_URL}/ping
+                    icon: /assets/icons/audiobookshelf.png
+            - type: monitor
+              cache: 1m
+              title: ArrStack
+              # Do not include trailing slash in *_URL env vars.
+              sites:
+                  - title: Prowlarr
+                    url: ${PROWLARR_URL}
+                    check-url: ${PROWLARR_URL}/ping
+                    icon: /assets/icons/prowlarr.png
+                  - title: Radarr
+                    url: ${RADARR_URL}
+                    check-url: ${RADARR_URL}/api/v3/system/status?apikey=${RADARR_API_KEY}
+                    icon: /assets/icons/radarr.png
+                  - title: Sonarr
+                    url: ${SONARR_URL}
+                    check-url: ${SONARR_URL}/api/v3/system/status?apikey=${SONARR_API_KEY}
+                    icon: /assets/icons/sonarr.png
+                  - title: Bazarr
+                    url: ${BAZARR_URL}
+                    check-url: ${BAZARR_URL}/ping
+                    icon: /assets/icons/bazarr.png
+                  # - title: Homarr
+                  #   url: ${HOMARR_URL}
+                  #   check-url: ${HOMARR_URL}/ping
+                  #   icon: /assets/icons/homarr.png
+                  - title: Lidarr
+                    url: ${LIDARR_URL}
+                    check-url: ${LIDARR_URL}/ping
+                    icon: /assets/icons/lidarr.png
+                  - title: Readarr
+                    url: ${READARR_URL}
+                    check-url: ${READARR_URL}/ping
+                    icon: /assets/icons/readarr.png

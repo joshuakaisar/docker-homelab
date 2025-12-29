@@ -1,0 +1,173 @@
+# https://www.reddit.com/r/selfhosted/comments/15oe631/gluetun_and_qbittorrent_correct_setup_in/
+services:
+    prowlarr:
+        image: lscr.io/linuxserver/prowlarr:latest
+        container_name: prowlarr
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+            - ARRPATH=${ARRPATH}
+        volumes:
+            - ${ARRPATH}Prowlarr/config:/config
+            - ${ARRPATH}Prowlarr/backup:/data/Backup
+            - ${ARRPATH}Downloads:/downloads
+        restart: unless-stopped
+
+    flaresolverr:
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        container_name: flaresolverr
+        network_mode: "service:gluetun"
+        environment:
+            - LOG_LEVEL=info
+        restart: unless-stopped
+
+    sonarr:
+        image: lscr.io/linuxserver/sonarr:latest
+        container_name: sonarr
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+            - ARRPATH=${ARRPATH}
+        volumes:
+            - ${ARRPATH}Sonarr/config:/config
+            - ${ARRPATH}Sonarr/backup:/data/Backup
+            - ${ARRPATH}Downloads:/downloads # Shared download path
+            - /mnt/nas/:/data/shows
+        restart: unless-stopped
+
+    radarr:
+        image: lscr.io/linuxserver/radarr:latest
+        container_name: radarr
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+            - ARRPATH=${ARRPATH}
+        volumes:
+            - ${ARRPATH}Radarr/config:/config
+            - ${ARRPATH}Radarr/backup:/data/Backup
+            - ${ARRPATH}Downloads:/downloads # Shared download path
+            - /mnt/nas/:/data/movies
+        restart: unless-stopped
+
+    lidarr:
+        image: lscr.io/linuxserver/lidarr:latest
+        container_name: lidarr
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+            - ARRPATH=${ARRPATH}
+        volumes:
+            - ${ARRPATH}Lidarr/config:/config
+            - ${ARRPATH}Downloads:/downloads
+            - /mnt/nas/:/data/music
+        restart: unless-stopped
+
+    readarr:
+        image: lscr.io/linuxserver/readarr:develop
+        container_name: readarr
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+            - ARRPATH=${ARRPATH}
+        volumes:
+            - ${ARRPATH}Readarr/config:/config
+            - ${ARRPATH}Readarr/books:/data/books
+            - ${ARRPATH}Downloads:/downloads
+            - /mnt/nas/:/data/books
+        restart: unless-stopped
+
+    # homarr:
+    #     container_name: homarr
+    #     image: ghcr.io/ajnart/homarr:latest
+    #     restart: unless-stopped
+    #     volumes:
+    #         - ${ARRPATH}Homarr/configs:/app/data/configs
+    #         - ${ARRPATH}Homarr/icons:/app/public/icons
+    #         - ${ARRPATH}Homarr/data:/data
+    #     environment:
+    #         - ARRPATH=${ARRPATH}
+
+    bazarr:
+        image: lscr.io/linuxserver/bazarr:latest
+        container_name: bazarr
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+        volumes:
+            - /media/arr/bazarr/config:/config
+            - ${ARRPATH}Downloads:/downloads # Shared download path
+            - /mnt/nas/:/data/movies # Movies for subtitles
+            - /mnt/nas/:/data/shows # Shows for subtitles
+        restart: unless-stopped
+
+    qbittorrent:
+        image: lscr.io/linuxserver/qbittorrent:latest
+        container_name: qbittorrent
+        network_mode: "service:gluetun"
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=${TZ}
+            - WEBUI_PORT=8080
+            - TORRENTING_PORT=6881
+            - ARRPATH=${ARRPATH}
+        volumes:
+            - ${ARRPATH}qbittorrent/config:/config
+            - ${ARRPATH}Downloads:/downloads
+        depends_on:
+            - gluetun
+        restart: unless-stopped
+
+    # qbittorrent-restart:
+    #     image: alpine:latest
+    #     container_name: qbittorrent-restart
+    #     command: >
+    #     sh -c "while true; do
+    #             sleep 604800; # 7 days
+    #             docker restart qbittorrent;
+    #             done"
+    #     volumes:
+    #     - /var/run/docker.sock:/var/run/docker.sock
+    #     restart: unless-stopped
+
+    gluetun:
+        image: qmcgaw/gluetun
+        container_name: gluetun
+        ports:
+            - 9696:9696 #prowlarr
+            - 8191:8191 #FlareSolverr
+            - 7878:7878 #radarr
+            - 8989:8989 #sonarr
+            - 6767:6767 #bazarr
+            - 8686:8686 #lidarr
+            - 8787:8787 #readarr
+            # - 7575:7575 #homarr
+            - 8080:8080 #qbittorrent
+            - 6881:6881 #qbittorrent
+            - 6881:6881/udp #qbittorrent
+            - 4040:8000 #gluetun control server
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun:/dev/net/tun
+        environment:
+            - VPN_SERVICE_PROVIDER=surfshark
+            - VPN_TYPE=wireguard
+            - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+            - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+            - TZ=${TZ}
+            - SERVER_CITIES=${SERVER_CITIES}
+            - UPDATER_PERIOD=12h
+            # - GLUETUN_CONTROL_SERVER_ADDRESS=:8000

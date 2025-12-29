@@ -1,0 +1,14 @@
+services:
+    twingate-connector:
+        container_name: twingate
+        image: twingate/connector:latest
+        restart: unless-stopped
+        network_mode: host
+        cap_add:
+            - NET_ADMIN
+        environment:
+            - TWINGATE_NETWORK=${TWINGATE_NETWORK}
+            - TWINGATE_ACCESS_TOKEN=${TWINGATE_ACCESS_TOKEN}
+            - TWINGATE_REFRESH_TOKEN=${TWINGATE_REFRESH_TOKEN}
+            - TWINGATE_LABEL_HOSTNAME=${HOSTNAME}
+            - TWINGATE_LABEL_DEPLOYED_BY=docker
