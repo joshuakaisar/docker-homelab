@@ -18,6 +18,7 @@ A collection of Docker Compose stacks for a self-hosted homelab. Each service li
   - **Glance** (`glance/docker-compose.yml`)
 - **Remote access**
   - **Twingate connector** (`twingate/docker-compose.twingate.yml`)
+- **Watchtower** (`watchtower/docker-compose.watchtower.yml`) for auto updating containers
 
 ## Quick start
 
@@ -53,5 +54,6 @@ Several compose files reference environment variables (e.g., `TZ`, `APPPATH`, `A
 ├── immich/
 ├── glance/
 ├── nginx/
-└── twingate/
+├── twingate/
+└── watchtower/
 ```
