@@ -24,6 +24,7 @@ services:
             - jellyseerr
             - n8n
             - qbittorrent
+            - twingate
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         network_mode: host
