@@ -1,4 +1,3 @@
-# https://www.reddit.com/r/selfhosted/comments/15oe631/gluetun_and_qbittorrent_correct_setup_in/
 services:
     prowlarr:
         image: lscr.io/linuxserver/prowlarr:latest
@@ -86,17 +85,6 @@ services:
             - /mnt/nas/:/data/books
         restart: unless-stopped
 
-    # homarr:
-    #     container_name: homarr
-    #     image: ghcr.io/ajnart/homarr:latest
-    #     restart: unless-stopped
-    #     volumes:
-    #         - ${ARRPATH}Homarr/configs:/app/data/configs
-    #         - ${ARRPATH}Homarr/icons:/app/public/icons
-    #         - ${ARRPATH}Homarr/data:/data
-    #     environment:
-    #         - ARRPATH=${ARRPATH}
-
     bazarr:
         image: lscr.io/linuxserver/bazarr:latest
         container_name: bazarr
@@ -153,7 +141,6 @@ services:
             - 6767:6767 #bazarr
             - 8686:8686 #lidarr
             - 8787:8787 #readarr
-            # - 7575:7575 #homarr
             - 8080:8080 #qbittorrent
             - 6881:6881 #qbittorrent
             - 6881:6881/udp #qbittorrent
