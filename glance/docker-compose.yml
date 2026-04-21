@@ -4,8 +4,8 @@ services:
         image: glanceapp/glance
         restart: unless-stopped
         volumes:
-            - /home/joshua-kaisar/homelab/open80-homelab/glance/config:/app/config
-            - /home/joshua-kaisar/homelab/open80-homelab/glance/assets/:/app/assets
+            - ${GLANCE_CONFIG_PATH:-./config}:/app/config
+            - ${GLANCE_ASSETS_PATH:-./assets}:/app/assets
             - /proc:/host/proc:ro
             - /sys:/host/sys:ro
             - /mnt/media:/mnt/media:ro
