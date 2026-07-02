@@ -7,7 +7,7 @@ A collection of Docker Compose stacks for a self-hosted homelab. Each service li
 - **Nginx Proxy Manager** (`nginx/docker-compose.yml`) for reverse proxy + TLS
 - **Media & requests**
   - **Jellyfin** (`jellyfin/docker-compose.jellyfin.yml`)
-  - **Jellyseerr** (`jellyseerr/docker.compose.jellyseerr.yml`)
+  - **Seerr** (`seerr/docker-compose.seerr.yml`)
   - **AudioBookShelf** (`audioBookShelf/docker-compose.audiobook.yml`)
 - **Photo management**
   - **Immich** (`immich/docker-compose.immich.yml`) with Postgres + Redis/Valkey
@@ -50,7 +50,7 @@ Several compose files reference environment variables (e.g., `TZ`, `APPPATH`, `A
 ├── audioBookShelf/
 ├── gluetun-arr/
 ├── jellyfin/
-├── jellyseerr/
+├── seerr/
 ├── immich/
 ├── glance/
 ├── nginx/
